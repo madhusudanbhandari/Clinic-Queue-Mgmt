@@ -73,3 +73,127 @@ def appointment_list(request):
 
     serializer=AppointmentSerializer(appointments,many=True)
     return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_appointment_by_phone(request,phone):
+    today=timezone.localdate()
+    appointments=Appointment.objects.filter(
+        patienr_phone=phone,
+        appointment_date=today
+    ).select_related('doctor__user','doctor__department')
+
+    if not appointments.exists():
+        return Response(
+            {'message':'No appointment found for this phone number today'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    
+    serializer=AppointmentSerializer(appointments,many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+@permission_classes([IsAuthenticated])
+def update_appointment_status(request,pk):
+    appointment=get_object_or_404(Appointment,pk=pk)
+    new_status=request.data.get('status')
+
+    valid_statuses=['booked','waiting','called','serving','served','no_show','cancelled']
+    if new_status not in valid_statuses:
+        return Response({'error':f'Invalid status. Choose from: {valid_statuses}'},status=400)
+    
+
+    if new_status=='called':
+        appointment.called_at=timezone.now()
+
+        if appointment.doctor.department:
+            queue,_=QueueStatus.objects.get_or_create(department=appointment.doctor.department)
+            queue.current_token=appointment.token_number
+            queue.last_called_token=appointment.token_number
+            queue.save()
+
+
+        elif new_status=='served':
+            appointment.served_at=timezone.now()
+
+        appointment.status=new_status
+        appointment.doctor_notes=request.data.get('doctor_notes',appointment.doctor_notes)
+        appointment.save()
+
+        serializer=AppointmentSerializer(appointment)
+        return Response({'message':'Status Updated','appointment':serializer.data})
+    
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def queue_status_list(request):
+    today=timezone.localdate()
+    statuses=QueueStatus.objects.filter(is_open=True).select_related('department')
+    serializer=QueueStatusSerializer(statuses,many=True)
+
+
+    data=serializer.data 
+    for item in data:
+        dept_id=item['department']
+        waiting_count=Appointment.objects.filter(
+            doctor__department_id=dept_id,
+            appointment_date=today,
+            status='waiting'
+        ).count()
+        item['waiting_count']=waiting_count
+
+    return Response(data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def call_next_patient(request):
+    dept_id=request.data.get('department_id')
+    if not dept_id:
+        return Response({'error':'department_id is required'},status=400)
+    
+    today=timezone.localdate()
+
+
+    next_appointment=Appointment.objects.filter(
+        doctor__department_id=dept_id,
+        appointment_date=today,
+        status='waiting'
+    ).order_by('token_number').first()
+
+    if not next_appointment:
+        return Response({'message':'No more patients waiting in this department'})
+    
+    next_appointment.status = 'called'
+    next_appointment.called_at = timezone.now()
+    next_appointment.save()
+
+    queue, _ = QueueStatus.objects.get_or_create(department_id=dept_id)
+    queue.current_token = next_appointment.token_number
+    queue.last_called_token = next_appointment.token_number
+    queue.save()
+
+    return Response({
+        'message': f'Called {next_appointment.token_display}',
+        'appointment': AppointmentSerializer(next_appointment).data,
+        'token_display': next_appointment.token_display,
+        'patient_name': next_appointment.patient_name,
+    })
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def today_stats(request):
+    today=timezone.localdate()
+    appointments=Appointment.objects.filter(appointment_date=today)
+
+   
+    return Response({
+        'total_booked':  appointments.count(),
+        'waiting':       appointments.filter(status='waiting').count(),
+        'serving':       appointments.filter(status='serving').count(),
+        'served':        appointments.filter(status='served').count(),
+        'no_show':       appointments.filter(status='no_show').count(),
+        'cancelled':     appointments.filter(status='cancelled').count(),
+        'date':          str(today),
+    })
