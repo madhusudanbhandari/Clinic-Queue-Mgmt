@@ -19,7 +19,7 @@ class DoctorListSerializer(serializers.ModelSerializer):
         model=Doctor
         fields = [
             'id', 'full_name', 'department_name', 'department_code',
-            'qualification', 'consultation_fee', 'available_days',
+            'qualification', 'consultation_fees', 'available_days',
             'start_time', 'end_time', 'is_available', 'max_patients_per_day'
         ]
 
