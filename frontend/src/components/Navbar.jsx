@@ -18,7 +18,7 @@ export default function Navbar(){
 
     const styles = {
     nav: {
-      background: 'var(--primary)',
+      background: '#1976d2',
       padding: '0 24px',
       display: 'flex',
       alignItems: 'center',
