@@ -45,8 +45,9 @@ export default function Home(){
     heroSub:   { fontSize: '1.1rem', opacity: 0.85, marginBottom: '32px' },
     heroButtons: { display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' },
     btnPrimary: {
-      background: '#fff', color: 'var(--primary)', padding: '14px 28px',
-      borderRadius: '10px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem'
+      background: 'transparent', color: '#fff', padding: '14px 28px',
+      borderRadius: '10px', textDecoration: 'none', fontWeight: '700', 
+      border: '2px solid rgba(255,255,255,0.6)', fontSize: '1rem'
     },
     btnOutline: {
       background: 'transparent', color: '#fff', padding: '14px 28px',

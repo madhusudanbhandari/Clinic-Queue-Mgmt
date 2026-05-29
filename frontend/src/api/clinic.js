@@ -17,7 +17,7 @@ API.interceptors.request.use((config)=>{
 })
 
 
-export const getDepartment=()=>API.get('/departments/')
+export const getDepartments=()=>API.get('/departments/')
 
 export const getDoctors=(departmentId=null)=>{
     API.get('/doctors/',{params:departmentId? {department:departmentId}:{}})
