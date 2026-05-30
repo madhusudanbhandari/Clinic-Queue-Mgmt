@@ -1,7 +1,18 @@
 from django.contrib import admin
 from .models import Department, Doctor, Appointment, QueueStatus
-
+from django.contrib.auth.models import User
 # Register your models here.
+
+
+
+
+class UserAdmin(admin.ModelAdmin):
+    list_display=['username','email']
+
+admin.site.unregister(User)
+admin.site.register(User,UserAdmin)
+
+
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):

@@ -8,6 +8,7 @@ import QueueDisplay from './pages/QueueDisplay.jsx'
 import AdminPanel from './pages/AdminPanel.jsx'
 import DoctorDashboard from './pages/DoctorDashboard.jsx'
 import Login from './pages/Login.jsx'
+import Register from './pages/RegisterPage.jsx'
 
 function ProtectedRoute({children}){
   const token=localStorage.getItem('access_token')
@@ -71,7 +72,7 @@ export default function App(){
       <Route path="/check-token" element={<CheckToken />} />
       <Route path="/queue"       element={<QueueDisplay />} />
       <Route path="/login"       element={<Login />} /> 
-    
+      <Route path="/register" element={<Register/>}/>
       <Route path="/admin"  element={<ProtectedRoute><AdminPanel/></ProtectedRoute>}/> 
       <Route path="/doctor"  element={<ProtectedRoute><DoctorDashboard/></ProtectedRoute>}/>
     </Routes>

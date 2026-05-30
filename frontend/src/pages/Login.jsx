@@ -57,7 +57,7 @@ export default function Login() {
 
     return(
         <div style={s.page}>
-            <div style={s.cart}>
+            <div style={s.card}>
                 <div style={s.icon}>🔐</div>
                 <div style={s.title}> Staff Login</div>
                 <div style={s.sub}>Receptionist/Doctor/Admin</div>
@@ -87,14 +87,7 @@ export default function Login() {
                         {loading ? '⏳ Logging in...' : '→ Login'}
                     </button>
                 </form>
-                {/* <div style={s.roles}>
-                <strong>Login roles:</strong><br />
-                🔴 <strong>Superadmin</strong> — Full access (python manage.py createsuperuser)<br />
-                ⚙️ <strong>Admin/Receptionist</strong> — Queue management<br />
-                🩺 <strong>Doctor</strong> — Patient dashboard<br /><br />
-                <em>Patients don't need to log in to book.</em>
-                </div> */}
-
+              
                 <div style={s.hint}>
                 <a href="/book" style={{ color: 'var(--primary)' }}>📋 Book as Patient →</a>
                 </div>

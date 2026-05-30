@@ -74,10 +74,10 @@ export default function Navbar(){
 
         <div style={styles.links}>
             <Link to="/"            style={styles.link(isActive('/'))}>Home</Link>
-            <Link to="/book"        style={styles.link(isActive('/book'))}>📋 Book</Link>
-            <Link to="/check-token" style={styles.link(isActive('/check-token'))}>🔍 My Token</Link>
-            <Link to="/queue"       style={styles.link(isActive('/queue'))}>📺 Queue Board</Link>
-
+            <Link to="/book"        style={styles.link(isActive('/book'))}>Book</Link>
+            <Link to="/check-token" style={styles.link(isActive('/check-token'))}>MyToken</Link>
+            <Link to="/queue"       style={styles.link(isActive('/queue'))}>QueueBoard</Link>
+            <Link to="/register" style={styles.link(isActive('/register'))}>Register</Link>
             {isLoggedIn?(
                 <>
                  <Link to="/admin"  style={styles.link(isActive('/admin'))}>⚙️ Admin</Link>
