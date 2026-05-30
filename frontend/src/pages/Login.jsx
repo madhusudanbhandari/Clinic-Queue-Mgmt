@@ -1,4 +1,5 @@
 import React  from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../api/clinic";
 
@@ -86,13 +87,13 @@ export default function Login() {
                         {loading ? '⏳ Logging in...' : '→ Login'}
                     </button>
                 </form>
-                <div style={s.roles}>
+                {/* <div style={s.roles}>
                 <strong>Login roles:</strong><br />
                 🔴 <strong>Superadmin</strong> — Full access (python manage.py createsuperuser)<br />
                 ⚙️ <strong>Admin/Receptionist</strong> — Queue management<br />
                 🩺 <strong>Doctor</strong> — Patient dashboard<br /><br />
                 <em>Patients don't need to log in to book.</em>
-                </div>
+                </div> */}
 
                 <div style={s.hint}>
                 <a href="/book" style={{ color: 'var(--primary)' }}>📋 Book as Patient →</a>
