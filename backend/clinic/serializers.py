@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.utils import timezone
+from django.contrib.auth.models import User
 from .models import Department, Doctor, Appointment, QueueStatus
 
 
@@ -88,3 +89,48 @@ class QueueStatusSerializer(serializers.ModelSerializer):
             'id', 'department', 'department_name', 'department_code',
             'current_token', 'last_called_token', 'date', 'is_open'
         ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    role        = serializers.SerializerMethodField()
+    doctor_info = serializers.SerializerMethodField()
+    full_name   = serializers.SerializerMethodField()
+
+    class Meta:
+        model  = User
+        fields = [
+            'id', 'username', 'email',
+            'full_name',    # computed → get_full_name()
+            'role',         # computed → get_role()
+            'doctor_info',  # computed → get_doctor_info()
+        ]
+
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+    
+    def get_full_name(self,obj):
+        return obj.get_full_name() or obj.username
+    
+    def get_role(self,obj):
+        if obj.is_superuser:
+            return 'superadmin'
+        if hasattr(obj, 'doctor_profile'):
+            return 'doctor'
+        return 'admin'
+
+    def get_doctor_info(self,obj):
+        if not hasattr (obj, 'doctor_profile'):
+            return None
+        
+        doc=obj.doctor_profile
+        return{
+            'id':              doc.id,
+            'department':      doc.department.name if doc.department else None,
+            'department_id':   doc.department.id   if doc.department else None,
+            'department_code': doc.department.code if doc.department else None,
+            'qualification':   doc.qualification,
+            'nmc_number':      doc.nmc_number,
+            'consultation_fee':str(doc.consultation_fee),
+            'is_available':    doc.is_available,
+        }

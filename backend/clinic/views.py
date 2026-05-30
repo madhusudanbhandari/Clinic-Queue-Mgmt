@@ -3,12 +3,72 @@ from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
 from django.utils import timezone
+from django.contrib.auth import authenticate
 from django.shortcuts import get_object_or_404
 from .models import Department, Doctor,Appointment,QueueStatus
-from .serializers import DepartmentSerializer,DoctorListSerializer,AppointmentCreateSerializer,AppointmentSerializer,QueueStatusSerializer
+from .serializers import UserSerializer,DepartmentSerializer,DoctorListSerializer,AppointmentCreateSerializer,AppointmentSerializer,QueueStatusSerializer
 # Create your views here.
 
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def staff_login(request):
+    username=request.data.get('username')
+    password=request.data.get('password')
+
+    if not username or not password:
+        return Response(
+            {'error':'Please provide both username and password'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    user=authenticate(username=username, password=password)
+
+    if user is None:
+        return Response(
+            {'error':'Invalid username or password'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
+    if not user.is_active:
+        return Response(
+            {'error':'This account is disabled'},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    refresh=RefreshToken.for_user(user)
+
+    user_data=UserSerializer(user).data
+
+    return Response({
+        'access':str(refresh.access_token),
+        'refresh':str(refresh),
+        'user':user_data,
+
+    },status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def staff_logout(request):
+    try:
+        refresh_token=request.data.get('refresh')
+        token=RefreshToken(refresh_token)
+        token.blacklist()
+        return Response({'message':'Logged out successfully'})
+    except Exception:
+        return Response({'message':'Logged out'})
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+
+def get_current_user(request):
+    user_data=UserSerializer(request.user).data
+    return Response(user_data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

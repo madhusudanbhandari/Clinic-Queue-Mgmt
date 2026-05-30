@@ -13,4 +13,8 @@ urlpatterns=[
     path('queue-status/', views.queue_status_list, name='queue-status'),
     path('queue/call-next/', views.call_next_patient, name='call-next'),
     path('stats/', views.today_stats, name='today-stats'),
+    path('login/', views.staff_login, name='staff-login'),
+    path('logout/', views.staff_logout, name='staff-logout'),
+    path('me/', views.get_current_user, name='current-user'),
+
 ]
