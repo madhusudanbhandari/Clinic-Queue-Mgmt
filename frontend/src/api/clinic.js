@@ -16,6 +16,15 @@ API.interceptors.request.use((config)=>{
     return config
 })
 
+export const login=(username,password)=>
+    API.post('/login/',{username,password})
+
+export const logout=()=>{
+    API.post('/logout/',{refresh:localStorage.getItem('refresh_token')})
+
+}
+
+export const getCurretnUser=()=>API.get('/me/')
 
 export const getDepartments=()=>API.get('/departments/')
 
