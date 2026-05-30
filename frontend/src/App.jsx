@@ -7,7 +7,7 @@ import CheckToken from './pages/CheckToken.jsx'
 import QueueDisplay from './pages/QueueDisplay.jsx'
 //import AdminPanel from './pages/AdminPanel.jsx'
 // import DoctorDashboard from './pages/DoctorDashboard.jsx'
-// import Login from './pages/Login.jsx'
+//import Login from './pages/Login.jsx'
 
 // function ProtectedRoute({children}){
 //   const token=localStorage.getItem('access_token')
@@ -25,10 +25,10 @@ export default function App(){
       <Route path="/book"  element={<BookAppointment/>}/>
       <Route path="/check-token" element={<CheckToken />} />
       <Route path="/queue"       element={<QueueDisplay />} />
-      {/* <Route path="/login"       element={<Login />} /> */}
-    
+      {/* <Route path="/login"       element={<Login />} /> 
+     */}
       {/* <Route path="/admin"  element={<ProtectedRoute><AdminPanel/></ProtectedRoute>}/> */}
-      {/* <Route path="/doctor"  element={<ProtectedRoute><DoctorDashboard/></ProtectedRoute>}/> */}
+       {/* <Route path="/doctor"  element={<ProtectedRoute><DoctorDashboard/></ProtectedRoute>}/> */}
     </Routes>
     </BrowserRouter>
   )
